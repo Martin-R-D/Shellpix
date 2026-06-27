@@ -1,6 +1,6 @@
-const CUBE_VALUES: [u8; 6] = [0, 0x5f, 0x87, 0xaf, 0xd7, 0xff];
+pub const CUBE_VALUES: [u8; 6] = [0, 0x5f, 0x87, 0xaf, 0xd7, 0xff];
 
-fn nearest_cube_index(v: u8) -> usize {
+pub fn nearest_cube_index(v: u8) -> usize {
     let mut best = 0;
     let mut best_dist = i16::MAX;
     for (i, &cv) in CUBE_VALUES.iter().enumerate() {

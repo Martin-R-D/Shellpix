@@ -4,6 +4,7 @@ use clap::{Parser, ValueEnum};
 use crossterm::terminal;
 
 mod color;
+mod dither;
 mod image_loader;
 mod output;
 mod renderer;
@@ -44,6 +45,10 @@ struct Args {
     /// Color output mode
     #[arg(short, long, value_enum, default_value_t = ColorModeArg::Truecolor)]
     color: ColorModeArg,
+
+    /// Enable Floyd-Steinberg dithering
+    #[arg(short, long)]
+    dither: bool,
 }
 
 fn main() {
@@ -62,7 +67,16 @@ fn main() {
         ColorModeArg::Ansi256 => output::ColorMode::Ansi256,
     };
 
-    let img = image_loader::load_and_resize(&args.input, target_width, target_height);
+    let mut img = image_loader::load_and_resize(&args.input, target_width, target_height);
+
+    if args.dither {
+        let palette_size = match color_mode {
+            output::ColorMode::Ansi256 => 256,
+            output::ColorMode::TrueColor => 65536,
+        };
+        dither::floyd_steinberg(&mut img, palette_size);
+    }
+
     let grid = renderer::render_halfblock(&img);
     output::print_to_terminal(&grid, color_mode);
 }
