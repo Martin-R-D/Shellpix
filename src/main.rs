@@ -3,6 +3,7 @@ use std::process;
 use clap::{Parser, ValueEnum};
 use crossterm::terminal;
 
+mod color;
 mod image_loader;
 mod output;
 mod renderer;
@@ -12,6 +13,13 @@ enum RenderMode {
     Halfblock,
     Ascii,
     Braille,
+}
+
+#[derive(Debug, Clone, ValueEnum)]
+enum ColorModeArg {
+    Truecolor,
+    #[value(name = "256")]
+    Ansi256,
 }
 
 #[derive(Parser, Debug)]
@@ -32,6 +40,10 @@ struct Args {
     /// Render mode
     #[arg(short, long, value_enum, default_value_t = RenderMode::Halfblock)]
     mode: RenderMode,
+
+    /// Color output mode
+    #[arg(short, long, value_enum, default_value_t = ColorModeArg::Truecolor)]
+    color: ColorModeArg,
 }
 
 fn main() {
@@ -45,7 +57,12 @@ fn main() {
     let target_width = args.width.unwrap_or(term_cols as u32);
     let target_height = args.height.unwrap_or((term_rows as u32) * 2);
 
+    let color_mode = match args.color {
+        ColorModeArg::Truecolor => output::ColorMode::TrueColor,
+        ColorModeArg::Ansi256 => output::ColorMode::Ansi256,
+    };
+
     let img = image_loader::load_and_resize(&args.input, target_width, target_height);
     let grid = renderer::render_halfblock(&img);
-    output::print_to_terminal(&grid);
+    output::print_to_terminal(&grid, color_mode);
 }
