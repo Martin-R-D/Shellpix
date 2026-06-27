@@ -1,1 +1,9 @@
 /target
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.bmp
+*.tiff
+*.tif

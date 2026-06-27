@@ -1,4 +1,9 @@
+use std::process;
+
 use clap::{Parser, ValueEnum};
+use crossterm::terminal;
+
+mod image_loader;
 
 #[derive(Debug, Clone, ValueEnum)]
 enum RenderMode {
@@ -30,12 +35,20 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    println!("Input file: {}", args.input);
-    if let Some(w) = args.width {
-        println!("Width: {w}");
-    }
-    if let Some(h) = args.height {
-        println!("Height: {h}");
-    }
-    println!("Mode: {:?}", args.mode);
+    let (term_cols, term_rows) = terminal::size().unwrap_or_else(|e| {
+        eprintln!("Error: failed to detect terminal size: {e}");
+        process::exit(1);
+    });
+
+    let target_width = args.width.unwrap_or(term_cols as u32);
+    let target_height = args.height.unwrap_or((term_rows as u32) * 2);
+
+    let img = image_loader::load_and_resize(&args.input, target_width, target_height);
+
+    println!(
+        "Loaded and resized image: {}x{} (mode: {:?})",
+        img.width(),
+        img.height(),
+        args.mode,
+    );
 }
