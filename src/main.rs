@@ -4,6 +4,7 @@ use clap::{Parser, ValueEnum};
 use crossterm::terminal;
 
 mod image_loader;
+mod renderer;
 
 #[derive(Debug, Clone, ValueEnum)]
 enum RenderMode {
