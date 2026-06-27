@@ -1,0 +1,11 @@
+[package]
+name = "shellpix"
+version = "0.1.0"
+edition = "2024"
+description = "Render images, GIFs, and video as colored ASCII/Unicode art directly in your terminal"
+license = "MIT"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+image = "0.25"
+crossterm = "0.28"
