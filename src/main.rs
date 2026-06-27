@@ -4,6 +4,7 @@ use clap::{Parser, ValueEnum};
 use crossterm::terminal;
 
 mod image_loader;
+mod output;
 mod renderer;
 
 #[derive(Debug, Clone, ValueEnum)]
@@ -45,11 +46,6 @@ fn main() {
     let target_height = args.height.unwrap_or((term_rows as u32) * 2);
 
     let img = image_loader::load_and_resize(&args.input, target_width, target_height);
-
-    println!(
-        "Loaded and resized image: {}x{} (mode: {:?})",
-        img.width(),
-        img.height(),
-        args.mode,
-    );
+    let grid = renderer::render_halfblock(&img);
+    output::print_to_terminal(&grid);
 }
